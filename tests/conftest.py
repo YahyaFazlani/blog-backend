@@ -16,7 +16,7 @@ def client():
       db.create_all()
 
       for i in range(1, 5):
-        test_user = User(firstname=f"TestUser{i}", lastname="Blog",
+        test_user = User(firstname=f"TestUser{i}", lastname="Blogger",
                          email=f"testuser{i}@outlook.com", password="jfkdlsajfklds")
         db.session.add(test_user)
         db.session.commit()
