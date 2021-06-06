@@ -15,8 +15,9 @@ def client():
     with app.app_context():
       db.create_all()
 
-      test_user = User(firstname="Yahya", lastname="Fazlani",
-                       email="yahyafazlani@outlook.com", password="yahyafazlani@outlook.com")
-      db.session.add(test_user)
-      db.session.commit()
+      for i in range(1, 5):
+        test_user = User(firstname=f"TestUser{i}", lastname="Blog",
+                         email=f"testuser{i}@outlook.com", password="jfkdlsajfklds")
+        db.session.add(test_user)
+        db.session.commit()
     yield client
