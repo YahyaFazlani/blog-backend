@@ -1,15 +1,16 @@
 from flask import Blueprint
-from flask_jwt_extended import (create_access_token, create_refresh_token,
-                                get_jwt, get_jwt_identity)
+from flask_jwt_extended import (JWTManager, create_access_token,
+                                create_refresh_token, get_jwt,
+                                get_jwt_identity)
 from flask_jwt_extended.view_decorators import jwt_required
 from flask_restful import Api, Resource, abort, fields
-from models.user import User as UserModel
 from models import db
+from models.user import User as UserModel
 from passlib.hash import pbkdf2_sha256 as sha256
-
 from utils.parsers.user_parsers import user_create_parser
 
-auth_bp = Blueprint("auth", __name__)
+jwt = JWTManager()
+auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 api = Api(auth_bp)
 
 user_resource_fields = {

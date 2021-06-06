@@ -1,12 +1,13 @@
 import pytest
-from app import app
+from app import create_app
 from models import db
-from models.user import User
 from models.blog import Blog
+from models.user import User
 
 
 @pytest.fixture(scope="module")
 def client():
+  app = create_app
   app.testing = True
   app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///:memory:"
   db.init_app(app)
