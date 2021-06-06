@@ -1,15 +1,30 @@
-from flask import send_from_directory
+from flask import Flask, send_from_directory
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 from sqlalchemy.exc import IntegrityError
 
 from models import db
-from views.blog import blog_bp
 from views.auth import auth_bp
-from utils.app import create_app
+from views.blog import blog_bp
+
+
+def create_app(db_uri: str = "sqlite:///database.db"):
+  UPLOAD_FOLDER = "./media/thumbnails"
+  ALLOWED_EXTENSIONS = {"jpeg", "jpg", "png", "gif"}
+
+  app = Flask(__name__)
+
+  app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+  app.config["ALLOWED_EXTENSIONS"] = ALLOWED_EXTENSIONS
+  app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
+  app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+  return app
+
 
 app = create_app()
+
 
 db.init_app(app)
 
