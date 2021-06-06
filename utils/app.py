@@ -1,4 +1,6 @@
 from flask import Flask
+
+
 def create_app():
   UPLOAD_FOLDER = "./media/thumbnails"
   ALLOWED_EXTENSIONS = {"jpeg", "jpg", "png", "gif"}
