@@ -7,7 +7,7 @@ from models import User as UserModel
 from models import db
 from passlib.hash import pbkdf2_sha256 as sha256
 
-from ..utils.parsers.user_parsers import user_create_parser
+from utils.parsers.user_parsers import user_create_parser
 
 user_bp = Blueprint("users", __name__)
 api = Api(user_bp)

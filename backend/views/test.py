@@ -1,1 +1,0 @@
-from utils.email import validate_email

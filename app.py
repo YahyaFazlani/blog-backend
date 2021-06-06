@@ -1,6 +1,4 @@
-import os
-
-from flask import Flask, send_from_directory
+from flask import send_from_directory
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
@@ -26,8 +24,9 @@ def title_not_unique():
 
 
 @app.route("/media/<path:path>")
-def static_dir(path):
-    return send_from_directory("media", path)
+def media(path):
+  return send_from_directory("media", path)
+
 
 app.register_blueprint(blog_bp, url_prefix="/blog")
 app.register_blueprint(user_bp, url_prefix="/user")
