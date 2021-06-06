@@ -14,12 +14,9 @@ def client():
   with app.test_client() as client:
     with app.app_context():
       db.create_all()
-      user = User(firstname="Yahya", lastname="Fazlani",
-                  email="yahyafazlani@outlook.com", password="yahyafazlani@outlook.com")
-      db.session.add(user)
-      db.session.commit()
-      blog = Blog(title="Test", content="test",
-                  thumbnail="https://google.com/", is_published=True, author=user.id)
-      db.session.add(blog)
+
+      test_user = User(firstname="Yahya", lastname="Fazlani",
+                       email="yahyafazlani@outlook.com", password="yahyafazlani@outlook.com")
+      db.session.add(test_user)
       db.session.commit()
     yield client
