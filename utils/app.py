@@ -6,7 +6,6 @@ def create_app():
   ALLOWED_EXTENSIONS = {"jpeg", "jpg", "png", "gif"}
 
   app = Flask(__name__)
-  app.secret_key = "kjsdkjjfhgukahyejfds"
 
   app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
   app.config["ALLOWED_EXTENSIONS"] = ALLOWED_EXTENSIONS
