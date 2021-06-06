@@ -2,14 +2,14 @@ from flask import Blueprint, url_for
 from flask_jwt_extended.utils import get_jwt_identity
 from flask_jwt_extended.view_decorators import jwt_required
 from flask_restful import Api, Resource, abort, fields, marshal_with
-from models import Blog as BlogModel
-from models import User as UserModel
+from models.blog import Blog as BlogModel
+from models.user import User as UserModel
 from models import db
 from werkzeug.datastructures import FileStorage
 from utils.parsers.blog_parsers import blog_create_parser, blog_update_parser
 from utils.file import create_filename, get_extension, is_allowed
 
-blog_bp = Blueprint("blogs", __name__)
+blog_bp = Blueprint("blog", __name__)
 api = Api(blog_bp)
 
 blog_resource_fields = {

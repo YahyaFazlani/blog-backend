@@ -3,13 +3,13 @@ from flask_jwt_extended import (create_access_token, create_refresh_token,
                                 get_jwt, get_jwt_identity)
 from flask_jwt_extended.view_decorators import jwt_required
 from flask_restful import Api, Resource, abort, fields
-from models import User as UserModel
+from models.user import User as UserModel
 from models import db
 from passlib.hash import pbkdf2_sha256 as sha256
 
 from utils.parsers.user_parsers import user_create_parser
 
-auth_bp = Blueprint("users", __name__)
+auth_bp = Blueprint("auth", __name__)
 api = Api(auth_bp)
 
 user_resource_fields = {
