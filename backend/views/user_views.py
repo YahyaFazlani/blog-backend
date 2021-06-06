@@ -1,12 +1,13 @@
 from flask import Blueprint
-from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt_identity, get_jwt
+from flask_jwt_extended import (create_access_token, create_refresh_token,
+                                get_jwt, get_jwt_identity)
 from flask_jwt_extended.view_decorators import jwt_required
 from flask_restful import Api, Resource, abort, fields
-from models import User as UserModel, db
+from models import User as UserModel
+from models import db
 from passlib.hash import pbkdf2_sha256 as sha256
-from datetime import timedelta
 
-from .parsers.user_parsers import user_create_parser
+from ..utils.parsers.user_parsers import user_create_parser
 
 user_bp = Blueprint("users", __name__)
 api = Api(user_bp)

@@ -2,8 +2,12 @@ from flask import Blueprint
 from flask_jwt_extended.utils import get_jwt_identity
 from flask_jwt_extended.view_decorators import jwt_required
 from flask_restful import Api, Resource, abort, fields, marshal_with
-from models import Blog as BlogModel, User as UserModel, db
-from .parsers.blog_parsers import blog_create_parser, blog_update_parser
+from models import Blog as BlogModel
+from models import User as UserModel
+from models import db
+from werkzeug.datastructures import FileStorage
+from ..utils.parsers.blog_parsers import blog_create_parser, blog_update_parser
+from ..utils.file import create_filename
 
 blog_bp = Blueprint("blogs", __name__)
 api = Api(blog_bp)
@@ -12,6 +16,7 @@ blog_resource_fields = {
     "id": fields.Integer,
     "title": fields.String,
     "content": fields.String,
+    "thumbnail": fields.Url,
     "author": fields.Integer,
     "is_published": fields.Boolean,
 }
@@ -30,9 +35,12 @@ class Blogs(Resource):
     args = blog_create_parser.parse_args()
 
     author_email = get_jwt_identity()
-    author = UserModel.query.filter_by(email=author_email).first()
+    author: UserModel = UserModel.query.filter_by(email=author_email).first()
 
     is_published = args["is_published"] if "is_published" in args else False
+    thumbnail: FileStorage = args["thumbnail"]
+    filename = create_filename(author.id, args["title"])
+    thumbnail.save("media/thumbnails")
 
     blog = BlogModel(
         title=args["title"], content=args["content"], author=author.id, is_published=is_published)
@@ -98,7 +106,6 @@ class Blog(Resource):
 
     blog.title = args["title"] if "title" in args else blog.title
     blog.content = args["content"] if "content" in args else blog.content
-    blog.author = args["author"] if "author" in args else blog.author
     blog.is_published = args["is_published"] if "is_published" in args else blog.is_published
 
     db.session.commit()
