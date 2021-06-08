@@ -5,7 +5,7 @@ blog_create_parser = reqparse.RequestParser(bundle_errors=True)
 blog_create_parser.add_argument("title", type=str, required=True)
 blog_create_parser.add_argument("content", type=str, required=True)
 blog_create_parser.add_argument(
-    "thumbail", type=FileStorage, location="files", required=True)
+    "thumbnail", type=FileStorage, location="files", required=True)
 blog_create_parser.add_argument("is_published", type=bool, required=False)
 
 blog_update_parser = blog_create_parser.copy()
