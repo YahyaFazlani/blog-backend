@@ -1,4 +1,4 @@
-from flask import Blueprint, url_for
+from flask import Blueprint, url_for, current_app
 from flask_jwt_extended.utils import get_jwt_identity
 from flask_jwt_extended.view_decorators import jwt_required
 from flask_restful import Api, Resource, abort, fields, marshal_with
@@ -8,6 +8,7 @@ from models.user import User as UserModel
 from utils.file import create_filename, get_extension, is_allowed
 from utils.parsers.blog_parsers import blog_create_parser, blog_update_parser
 from werkzeug.datastructures import FileStorage
+import os
 
 blog_bp = Blueprint("blog", __name__, url_prefix="/blog")
 api = Api(blog_bp)
@@ -16,7 +17,7 @@ blog_resource_fields = {
     "id": fields.Integer,
     "title": fields.String,
     "content": fields.String,
-    "thumbnail": fields.Url,
+    "thumbnail": fields.String,
     "author": fields.Integer,
     "is_published": fields.Boolean,
 }
@@ -40,19 +41,22 @@ class Blogs(Resource):
     is_published = args["is_published"] if "is_published" in args else False
     thumbnail: FileStorage = args["thumbnail"]
 
-    if is_allowed(thumbnail.name):
-      extension = get_extension(thumbnail.name)
+    if is_allowed(thumbnail.filename):
+      extension = get_extension(thumbnail.filename)
       filename = create_filename(author.id, args["title"], extension)
-      filepath = f"media/thumbnails/{filename}"
-      thumbnail.save(filepath)
+      filepath = f"thumbnails/{filename}"
+      thumbnail.save("media/" + filepath)
 
-      thumbnail_url = url_for("media", path=filepath, _external=True)
+      thumbnail_url = url_for("media.media", path=filepath, _external=True)
 
       blog = BlogModel(
           title=args["title"], content=args["content"], author=author.id, thumbnail=thumbnail_url, is_published=is_published)
 
       db.session.add(blog)
       db.session.commit()
+
+      if current_app.testing:
+        os.remove("media/" + filepath)
 
       return blog, 201
 
