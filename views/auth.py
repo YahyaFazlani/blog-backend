@@ -7,28 +7,19 @@ from flask_restful import Api, Resource, abort, fields
 from models import db
 from models.user import User as UserModel
 from passlib.hash import pbkdf2_sha256 as sha256
-from utils.parsers.user_parsers import user_create_parser
+from utils.parsers.user_parsers import user_register_parser, user_login_parser
 
 jwt = JWTManager()
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 api = Api(auth_bp)
 
-user_resource_fields = {
-    "id": fields.Integer,
-    "firstname": fields.String,
-    "lastname": fields.String,
-    "email": fields.String,
-    "password": fields.String,
-    "is_author": fields.Boolean
-}
 
-
+@api.resource("/register")
 class UserRegister(Resource):
   def post(self):
-    args = user_create_parser.parse_args()
+    args = user_register_parser.parse_args()
 
     user = UserModel.query.filter_by(email=args["email"]).first()
-    print(user)
 
     if user:
       abort(
@@ -38,7 +29,7 @@ class UserRegister(Resource):
 
     new_user = UserModel(
         firstname=args["firstname"], lastname=args["lastname"], email=args["email"], password=sha256.hash(args["password"]))
-    access_token = create_access_token(identity=args["email"])
+    access_token = create_access_token(identity=args["email"], fresh=True)
     refresh_token = create_refresh_token(identity=args["email"])
 
     db.session.add(new_user)
@@ -51,9 +42,10 @@ class UserRegister(Resource):
     }
 
 
+@api.resource("/login")
 class UserLogin(Resource):
   def post(self):
-    args = user_create_parser.parse_args()
+    args = user_login_parser.parse_args()
     user: UserModel = UserModel.query.filter_by(
         email=args["email"]).first()
 
@@ -62,7 +54,7 @@ class UserLogin(Resource):
 
     if sha256.verify(args["password"], user.password):
 
-      access_token = create_access_token(identity=args["email"])
+      access_token = create_access_token(identity=args["email"], fresh=True)
       refresh_token = create_refresh_token(identity=args["email"])
 
       headers = [("Set-Cookie", f"access_token={access_token}; HttpOnly=true"), (
@@ -74,17 +66,13 @@ class UserLogin(Resource):
           "refresh_token": refresh_token
       }, 200, headers
 
-    abort(400, message="wrong credentials")
+    abort(401, message="invalid credentials")
 
 
+@api.resource("/refresh")
 class TokenRefresh(Resource):
   @jwt_required(refresh=True)
   def post(self):
     user = get_jwt_identity()
-    access_token = create_access_token(identity=user)
-    return {"access_token": access_token}
-
-
-api.add_resource(UserRegister, "/register")
-api.add_resource(UserLogin, "/login")
-api.add_resource(TokenRefresh, "/refresh")
+    access_token = create_access_token(identity=user, fresh=False)
+    return {"access_token": access_token}, 200
