@@ -13,4 +13,4 @@ def create_filename(author, title, extension):
 
 def is_allowed(filename: Optional[str]):
   return filename is not None and '.' in filename and \
-      get_extension(filename) in current_app.config["ALLOWED_EXTENSIONS"]
+      filename.endswith(current_app.config["ALLOWED_EXTENSIONS"])
